@@ -49,3 +49,4 @@ def installAPK(dev):
     print('安装 >>>' + install_APK_NAME + ' <<< 成功')
 
 #installAPK()
+#
