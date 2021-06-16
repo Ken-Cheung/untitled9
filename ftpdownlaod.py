@@ -4,7 +4,7 @@
 
 '''
 连接FTP，下载文件
-ftpfile 需要从外部传入,测试需要所以写死
+ftpfile 需要从外部传入,测试需要写死
 '''
 
 import os

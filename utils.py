@@ -3,6 +3,8 @@
 # @Time : 2021/6/11 11:52
 
 import configparser
+import time
+
 from airtest.core.android.adb import ADB
 
 
@@ -50,3 +52,14 @@ def checkDevice():
         else:
             settle.append(n)
     return settle,new_dict
+
+
+def timeout(sum):
+    #sum = 10 设置倒计时时间
+    timeflush = 0.25  # 设置屏幕刷新的间隔时间
+    for i in range(0, int(sum/timeflush)):
+        list = ["\\", "|", "/", "—"]
+        index = i % 4
+        print("\r请稍等 {}".format(list[index]), end="")
+        time.sleep(timeflush)
+
