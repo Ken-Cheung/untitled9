@@ -13,40 +13,62 @@ from utils import *
 先获取手机列表，再根据文件名匹配机型去安装
 '''
 
+
 app = 'bubei.tingshu'
 appPRO = 'bubei.tingshu.pro'
-# 获取连接设备SN
-#获取配置文件dict
+# 获取连接设备SN,获取配置文件dict
 deivcedict = checkDevice()[1]
 targetdevice = deList()
 
+
 def intallAPKpath(panduan):
-    name,path = downloadremotefile(panduan)
-    fullpaht = path +'/'+ name
+    name, path = downloadremotefile(panduan)
+    fullpaht = path + '/' + name
     return fullpaht
 
 
-def installAPK(dev):
-    '''
+def uninstall(currentDevice,applist):
+    #先检查在不在，再删除，不然会报错
+    for x in applist:
+        print(x)
+        if x == app:
+            currentDevice.uninstall_app(app)
+            print('apk文件删除成')
+        if x == appPRO :
+            currentDevice.uninstall_app(appPRO)
+
+
+def installAPK(deviceName,currentDevice):
+    """
     vivo比较特殊需要判断vivo 还是vivopro. vivo用的是普通微信支付，vivopro用的是vivo钱包
     普通微信通过在appstore中测试，无需在vivo上重复测试
-    '''
-    currentdev = connect_device('Android:///{}?cap_method=javacap&touch_method=adb'.format(dev)) #可以从main方法传入dev，无需在这里重新连接
-    #检查app是否安装，是执行卸载
-    applist = currentdev.list_app()
-    for i in applist:
-        if app == i :
-            currentdev.uninstall_app(app)
-            print('设备已经安装：>>> ' + app + ' <<< 正在卸载重新安装公测包')
-        if appPRO == i:
-            currentdev.uninstall_app(appPRO)
-            print('设备已经安装：>>> ' + app + ' <<< 正在卸载重新安装公测包')
-    #执行安装
-    print('未找到测试app，正在进行安装,当前机型：>>> ' + deivcedict[dev])
-    install_APK_NAME = intallAPKpath(deivcedict[dev])
-    currentdev.install_app(install_APK_NAME)
-    # 这里可以再次检查一下app在不在 list再输出成功
-    print('安装 >>>' + install_APK_NAME + ' <<< 成功')
+    """
+    # 检查app是否安装，是执行卸载
+    applist = currentDevice.list_app()
+    print(applist)
+    print(deviceName)
+    uninstall(currentDevice, applist)
+    if deviceName == 'huawei':
+        # 安装华为
+        install_APK_NAME = intallAPKpath(deviceName)
+        currentDevice.install_app(install_APK_NAME)
+        print('{}'.format(install_APK_NAME)+'   安装完成')
+    elif deviceName == 'other':
+        # 安装App Store版本
+        devicesInsatllPackeges = 'appstore'
+        install_APK_NAME = intallAPKpath(devicesInsatllPackeges)
+        currentDevice.install_app(install_APK_NAME)
+        print('{}'.format(install_APK_NAME) + '   安装完成')
+    else:
+        # 安装其余的ch_XXX_pay版本
+        install_APK_NAME = intallAPKpath(deviceName)
+        currentDevice.install_app(install_APK_NAME)
+        print('{}'.format(install_APK_NAME)+'   安装完成')
 
-#installAPK()
+
+# deviceName = checkDevice()[0]
+# devices = deList()
 #
+# for xDeviceName,yDevices in zip(deviceName,devices):
+#     currentDevice = connect_device('Android:///{}'.format(yDevices))
+#     installAPK(xDeviceName,currentDevice)

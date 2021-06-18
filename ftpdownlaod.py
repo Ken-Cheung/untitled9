@@ -10,7 +10,7 @@ ftpfile 需要从外部传入,测试需要写死
 import os
 from ftplib import FTP
 
-ftpfile='/packet/bubei.tingshu/9.9.9'
+ftpfile='/packet/dev/bubei.tingshu/beta/9.9.9.0'
 host='192.168.2.62'
 prot=21
 user='audio_tester'
@@ -36,6 +36,7 @@ def downloadremotefile(deviceModle=None):
     #downlist = []
     buffer_size = 10240
     localpath = os.getcwd()
+    localpath = os.path.join(localpath,'apk')
     #print(localpath)
     ftp.cwd(ftpfile)
     try:

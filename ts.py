@@ -9,6 +9,9 @@ import time
 from multiprocessing import Queue
 from airtest.core.android.adb import ADB
 from airtest.core.api import connect_device
+from installAPK import installAPK
+from utils import checkDevice
+from checkSysdialog import *
 
 
 def deList(queue):
@@ -21,20 +24,22 @@ def deList(queue):
     return deviceslist
 
 def getList(queue):
+
     getDevices = queue.get()
     dev = connect_device("Android:///" + f'{getDevices}')
     print(getDevices)
+    # 消除所有弹框
+    dialog(dev)
     pytest.main(['-q', './testcase/test_account.py::test_accountLogin', '--devices', '{}'.format(getDevices)])
 
 
-# def run(devices):
-#     '''
-#     先对去FTP下载安装包，自动安装，再启动测试
-#     :param devices:
-#     :return:
-#     '''
-#     pytest.main(['-q','./testcase/test_account.py::test_accountLogin', '--devices','{}'.format(devices)])
-#
+def startUP():
+    deviceName = checkDevice()[0]
+    devices = deList(queue)
+    for xDeviceName, yDevices in zip(deviceName, devices):
+        currentDevice = connect_device('Android:///{}'.format(yDevices))
+        installAPK(xDeviceName, currentDevice)
+
 
 if __name__ == '__main__':
     '''
@@ -45,8 +50,9 @@ if __name__ == '__main__':
     queue = Queue()
     devs = deList(queue)
     pool = []
+    startUP()
     for i in devs:
-        #dev = connect_device("Android:///" + f'{i}')
+        dev = connect_device("Android:///" + f'{i}')
         p = multiprocessing.Process(target=getList,args=(queue,))
         p.start()
         time.sleep(2)

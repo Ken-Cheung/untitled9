@@ -34,7 +34,7 @@ def loadini():
         raise Exception
     return section_list
 
-#
+
 def checkDevice():
     # 将设备保存为 dict
     deviceName = []
@@ -56,10 +56,10 @@ def checkDevice():
     settle = []
     for n in deviceName:
         print(n)
-        if n != 'huawei' and n != 'yyting' and n != 'other':
-            settle.append(n + 'pro')
-        else:
-            settle.append(n)
+        # if n != 'huawei' and n != 'yyting' and n != 'other':
+        #     settle.append(n + 'pro')
+        # else:
+        settle.append(n)
     return settle,new_dict
     # print(settle, "\n", new_dict)
 # checkDevice()

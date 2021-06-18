@@ -21,3 +21,5 @@ def cmdopt(request):
 @pytest.fixture()
 def devices(request):
     return request.config.getoption("--devices")
+
+
