@@ -34,7 +34,7 @@ def loadini():
         raise Exception
     return section_list
 
-
+#
 def checkDevice():
     # 将设备保存为 dict
     deviceName = []
