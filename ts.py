@@ -15,7 +15,7 @@ from checkSysdialog import *
 
 
 def deList(queue):
-    #返回当前设备连接UUID
+    # 返回当前设备连接UUID
     deviceName = []
     connectDevices = ADB().devices('device')
     deviceslist = [i[0] for i in connectDevices]
@@ -23,14 +23,15 @@ def deList(queue):
         queue.put(i)
     return deviceslist
 
-def getList(queue):
 
+def getList(queue):
     getDevices = queue.get()
     dev = connect_device("Android:///" + f'{getDevices}')
     print(getDevices)
     # 消除所有弹框
     dialog(dev)
-    pytest.main(['-q', './testcase/test_account.py::test_accountLogin', '--devices', '{}'.format(getDevices)])
+    # ./report 目录下面根据不同的机型创建不同的目录，各个机型的测试结果输出到各目录之下
+    pytest.main(['-s', '-q', './testcase/test_answer.py::test_answer2', '--devices', '{}'.format(getDevices), "--alluredir=./report/"])
 
 
 def startUP():

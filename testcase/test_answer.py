@@ -10,8 +10,7 @@ from airtest.core.api import *
 
 
 
-@pytest.mark.skip()
-def test_answer2(devices):
+def test_answer2(dev):
 
-    start_app('bubei.tingshu')
-    assert 0  # to see what was printed
+    dev.start_app('bubei.tingshu')
+    assert True  # to see what was printed
