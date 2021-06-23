@@ -9,8 +9,8 @@ import time
 from multiprocessing import Queue
 from airtest.core.android.adb import ADB
 from airtest.core.api import connect_device
-from installAPK import installAPK
-from utils import checkDevice
+from installAPK import installAPK, setup_function
+from utils import checkDevice, whoami
 from checkSysdialog import *
 
 
@@ -26,16 +26,18 @@ def deList(queue):
 
 def getList(queue):
     getDevices = queue.get()
-    dev = connect_device("Android:///" + f'{getDevices}')
-    print(getDevices)
-    # 消除所有弹框
-    dialog(dev)
+    deviceName = whoami(getDevices)
+    # currentDevice = connect_device("Android:///" + f'{getDevices}')
+    current = connect_device("Android:///" + f'{getDevices}')
+    print(deviceName)
+    setup_function(current)
+    installAPK(deviceName,current)
     # ./report 目录下面根据不同的机型创建不同的目录，各个机型的测试结果输出到各目录之下
-    pytest.main(['-s', '-q', './testcase/test_answer.py::test_answer2', '--devices', '{}'.format(getDevices), "--alluredir=./report/"])
+    pytest.main(['-vs', './testcase/test_answer.py::test_answer2',f"--devices={deviceName}", f"--alluredir=./report/{deviceName}"])
 
 
 def startUP():
-    deviceName = checkDevice()[0]
+    deviceName = checkDevice()[0]  # ['oppo', 'other']
     devices = deList(queue)
     for xDeviceName, yDevices in zip(deviceName, devices):
         currentDevice = connect_device('Android:///{}'.format(yDevices))
@@ -51,19 +53,10 @@ if __name__ == '__main__':
     queue = Queue()
     devs = deList(queue)
     pool = []
-    startUP()
     for i in devs:
-        dev = connect_device("Android:///" + f'{i}')
         p = multiprocessing.Process(target=getList,args=(queue,))
         p.start()
-        time.sleep(2)
+        print('pid:  ',p.pid)
         pool.append(p)
     for pool in pool:
         pool.join()
-
-    #异步
-    # pool = Pool(len(devs))
-    # for i in devs:
-    #     dev = connect_device("Android:///" + f'{i}')
-    #     pool.apply_async(run(dev))
-    #     time.sleep(2)
